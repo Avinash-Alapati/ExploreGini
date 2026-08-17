@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { X, ExternalLink, MapPin, Users } from 'lucide-react';
+import { X, ExternalLink, MapPin, Users, Globe, Award, Sparkles, Building } from 'lucide-react';
 
 export default function CompanyDrawer({ company, isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('drawer-open');
-      
       const handleEsc = (e) => {
         if (e.key === 'Escape') onClose();
       };
@@ -21,7 +20,6 @@ export default function CompanyDrawer({ company, isOpen, onClose }) {
 
   if (!company) return null;
 
-  // Safe URL parsing helper
   const getHostname = (url) => {
     try {
       return new URL(url).hostname.replace('www.', '');
@@ -33,102 +31,105 @@ export default function CompanyDrawer({ company, isOpen, onClose }) {
   return (
     <>
       <div 
-        className={`drawer-backdrop ${isOpen ? 'open' : ''}`} 
+        className={`drawer-backdrop-overlay ${isOpen ? 'active' : ''}`} 
         onClick={onClose}
       />
       
-      <div className={`drawer-content ${isOpen ? 'open' : ''}`}>
-        <button className="drawer-close" onClick={onClose}>
-          <X size={24} />
+      <div className={`drawer-panel-content ${isOpen ? 'active' : ''}`}>
+        <button className="btn-drawer-close" onClick={onClose} aria-label="Close drawer">
+          <X size={20} />
         </button>
         
-        <div className="drawer-header">
+        <div className="drawer-header-main">
           {company.logo_url ? (
-            <img src={company.logo_url} alt={company.company_name} className="drawer-logo" />
+            <img src={company.logo_url} alt={company.company_name} className="drawer-logo-large" />
           ) : (
-            <div className="drawer-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            <div className="drawer-logo-large">
               {company.company_name?.charAt(0).toUpperCase()}
             </div>
           )}
           
-          <div className="drawer-title-area">
+          <div className="drawer-title-box">
             <h2>{company.company_name}</h2>
-            <div className="drawer-badges">
-              {company.batch && <span className="company-batch">{company.batch}</span>}
-              {company.status && <span className="tag-pill" style={{ borderColor: 'var(--info)', color: 'var(--info)' }}>{company.status}</span>}
-              {company.stage && <span className="tag-pill">{company.stage}</span>}
-              {company.is_hiring && <span className="hiring-badge">Hiring Now</span>}
-              {company.top_company && <span className="tag-pill" style={{ borderColor: 'var(--warning)', color: 'var(--warning)' }}>Top Company</span>}
+            <div className="drawer-badge-group">
+              {company.batch && <span className="batch-tag">{company.batch}</span>}
+              {company.status && <span className="status-tag active">{company.status}</span>}
+              {company.stage && <span className="status-tag">{company.stage}</span>}
+              {company.is_hiring && <span className="hiring-badge-live">Hiring Now</span>}
+              {company.top_company && <span className="batch-tag" style={{ background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.3)', color: 'var(--warning)' }}>Top Startup</span>}
             </div>
           </div>
         </div>
         
         {company.one_liner && (
-          <div className="drawer-oneliner">{company.one_liner}</div>
+          <div className="drawer-quote-oneliner">{company.one_liner}</div>
         )}
         
         {company.long_description && (
-          <div className="drawer-longdesc">{company.long_description}</div>
+          <div className="drawer-description-text">{company.long_description}</div>
         )}
         
-        <div className="drawer-info-grid">
+        <div className="drawer-info-grid-panel">
           {company.website && (
-            <div className="info-item">
-              <span className="info-label">Website</span>
-              <span className="info-value">
+            <div className="info-grid-cell">
+              <span className="info-grid-label">Website</span>
+              <span className="info-grid-val">
                 <a href={company.website} target="_blank" rel="noopener noreferrer">
-                  {getHostname(company.website)}
+                  <Globe size={15} />
+                  <span>{getHostname(company.website)}</span>
+                  <ExternalLink size={13} />
                 </a>
-                <ExternalLink size={14} />
               </span>
             </div>
           )}
           
           {company.yc_profile_url && (
-            <div className="info-item">
-              <span className="info-label">YC Profile</span>
-              <span className="info-value">
-                <a href={company.yc_profile_url} target="_blank" rel="noopener noreferrer">View Profile</a>
-                <ExternalLink size={14} />
+            <div className="info-grid-cell">
+              <span className="info-grid-label">YC Profile</span>
+              <span className="info-grid-val">
+                <a href={company.yc_profile_url} target="_blank" rel="noopener noreferrer">
+                  <span>View YC Profile</span>
+                  <ExternalLink size={13} />
+                </a>
               </span>
             </div>
           )}
           
           {company.team_size && (
-            <div className="info-item">
-              <span className="info-label">Team Size</span>
-              <span className="info-value"><Users size={16} /> {company.team_size} employees</span>
+            <div className="info-grid-cell">
+              <span className="info-grid-label">Team Size</span>
+              <span className="info-grid-val"><Users size={16} /> {company.team_size} employees</span>
             </div>
           )}
           
           {company.all_locations && (
-            <div className="info-item">
-              <span className="info-label">Location</span>
-              <span className="info-value"><MapPin size={16} /> {company.all_locations}</span>
+            <div className="info-grid-cell">
+              <span className="info-grid-label">Location</span>
+              <span className="info-grid-val"><MapPin size={16} /> {company.all_locations}</span>
             </div>
           )}
 
           {company.industry && (
-            <div className="info-item">
-              <span className="info-label">Industry</span>
-              <span className="info-value">{company.industry}</span>
+            <div className="info-grid-cell">
+              <span className="info-grid-label">Industry</span>
+              <span className="info-grid-val">{company.industry}</span>
             </div>
           )}
 
           {company.subindustry && (
-            <div className="info-item">
-              <span className="info-label">Sub-Industry</span>
-              <span className="info-value">{company.subindustry}</span>
+            <div className="info-grid-cell">
+              <span className="info-grid-label">Sub-Industry</span>
+              <span className="info-grid-val">{company.subindustry}</span>
             </div>
           )}
         </div>
         
         {company.industries && company.industries.length > 0 && (
-          <div className="drawer-tags-section">
-            <h3>Industries</h3>
-            <div className="company-tags">
+          <div className="drawer-tags-block">
+            <h4>Industries</h4>
+            <div className="tag-pills-row">
               {company.industries.map(ind => (
-                <span key={typeof ind === 'string' ? ind : JSON.stringify(ind)} className="tag-pill">
+                <span key={typeof ind === 'string' ? ind : JSON.stringify(ind)} className="pill-item">
                   {typeof ind === 'string' ? ind : ind.name || ind}
                 </span>
               ))}
@@ -137,11 +138,11 @@ export default function CompanyDrawer({ company, isOpen, onClose }) {
         )}
         
         {company.regions && company.regions.length > 0 && (
-          <div className="drawer-tags-section">
-            <h3>Regions</h3>
-            <div className="company-tags">
+          <div className="drawer-tags-block">
+            <h4>Regions</h4>
+            <div className="tag-pills-row">
               {company.regions.map(r => (
-                <span key={typeof r === 'string' ? r : JSON.stringify(r)} className="tag-pill">
+                <span key={typeof r === 'string' ? r : JSON.stringify(r)} className="pill-item">
                   {typeof r === 'string' ? r : r.name || r}
                 </span>
               ))}
@@ -150,11 +151,11 @@ export default function CompanyDrawer({ company, isOpen, onClose }) {
         )}
         
         {company.tags && company.tags.length > 0 && (
-          <div className="drawer-tags-section">
-            <h3>Tags</h3>
-            <div className="company-tags">
+          <div className="drawer-tags-block">
+            <h4>Tags</h4>
+            <div className="tag-pills-row">
               {company.tags.map(t => (
-                <span key={typeof t === 'string' ? t : JSON.stringify(t)} className="tag-pill">
+                <span key={typeof t === 'string' ? t : JSON.stringify(t)} className="pill-item">
                   {typeof t === 'string' ? t : t.name || t}
                 </span>
               ))}

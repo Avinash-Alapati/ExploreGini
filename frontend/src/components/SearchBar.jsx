@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 
-export default function SearchBar({ value, onChange, onSearch, isSearching }) {
+export default function SearchBar({ value, onChange, onSearch, isSearching, placeholder }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && onSearch) {
       onSearch(value);
@@ -13,22 +13,25 @@ export default function SearchBar({ value, onChange, onSearch, isSearching }) {
   };
 
   return (
-    <div className="search-bar">
-      <Search className="search-icon" size={20} />
-      <input
-        type="text"
-        placeholder="Describe your startup idea or search companies..."
-        value={value}
-        onChange={onChange}
-        onKeyDown={handleKeyDown}
-      />
-      {isSearching ? (
-        <Loader2 className="spinner" size={20} />
-      ) : value ? (
-        <button className="search-clear" onClick={clearSearch}>
-          <X size={20} />
-        </button>
-      ) : null}
+    <div className="search-container-hero">
+      <div className="search-input-wrapper">
+        <Search className="search-icon-hero" size={22} />
+        <input
+          type="text"
+          className="search-input-hero"
+          placeholder={placeholder || "Search companies, industries, batches..."}
+          value={value || ''}
+          onChange={onChange}
+          onKeyDown={handleKeyDown}
+        />
+        {isSearching ? (
+          <Loader2 className="search-clear-hero spinner" size={20} />
+        ) : value ? (
+          <button className="search-clear-hero" onClick={clearSearch} title="Clear search">
+            <X size={20} />
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

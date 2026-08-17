@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, Users } from 'lucide-react';
+import { MapPin, Users, ArrowUpRight } from 'lucide-react';
 
 export default function CompanyCard({ company, onClick, index = 0, similarityScore }) {
   const getInitial = (name) => name ? name.charAt(0).toUpperCase() : '?';
@@ -12,55 +12,64 @@ export default function CompanyCard({ company, onClick, index = 0, similaritySco
 
   return (
     <div 
-      className="company-card" 
+      className="company-card-modern" 
       onClick={() => onClick(company)}
-      style={{ animationDelay: `${index * 0.05}s` }}
+      style={{ animationDelay: `${(index % 9) * 0.04}s` }}
     >
       {similarityScore != null && (
-        <div className="similarity-badge">
+        <div className="match-score-badge">
           {Math.round(similarityScore * 100)}% Match
         </div>
       )}
       
-      <div className={`status-indicator ${statusClass}`} title={company.status}></div>
-      
-      <div className="company-card-header">
-        {company.logo_url ? (
-          <img src={company.logo_url} alt={company.company_name} className="company-logo" />
-        ) : (
-          <div className="company-logo">{getInitial(company.company_name)}</div>
-        )}
+      <div>
+        <div className="card-top">
+          {company.logo_url ? (
+            <img src={company.logo_url} alt={company.company_name} className="company-logo-box" />
+          ) : (
+            <div className="company-logo-box">{getInitial(company.company_name)}</div>
+          )}
+          
+          <div className="company-header-info">
+            <div className="company-name-text">{company.company_name}</div>
+            <div className="badge-row">
+              {company.batch && <span className="batch-tag">{company.batch}</span>}
+              {company.status && <span className={`status-tag ${statusClass}`}>{company.status}</span>}
+            </div>
+          </div>
+        </div>
         
-        <div>
-          <div className="company-name">{company.company_name}</div>
-          {company.batch && <div className="company-batch">{company.batch}</div>}
+        <div className="company-oneliner">
+          {company.one_liner || 'No description available for this startup.'}
+        </div>
+        
+        <div className="tag-pills-row">
+          {company.industry && <span className="pill-item">{company.industry}</span>}
+          {company.subindustry && <span className="pill-item">{company.subindustry}</span>}
         </div>
       </div>
       
-      <div className="company-desc">{company.one_liner || 'No description available.'}</div>
-      
-      <div className="company-tags">
-        {company.industry && <span className="tag-pill">{company.industry}</span>}
-        {company.subindustry && <span className="tag-pill">{company.subindustry}</span>}
-      </div>
-      
-      <div className="company-footer">
-        {company.all_locations && (
-          <div className="footer-item">
-            <MapPin size={14} />
-            <span>{company.all_locations.split(',')[0]}</span>
-          </div>
-        )}
+      <div className="card-footer">
+        <div className="footer-meta-item">
+          {company.all_locations ? (
+            <>
+              <MapPin size={13} />
+              <span>{company.all_locations.split(',')[0]}</span>
+            </>
+          ) : company.team_size ? (
+            <>
+              <Users size={13} />
+              <span>{company.team_size} members</span>
+            </>
+          ) : (
+            <span style={{ opacity: 0.5 }}>View Startup</span>
+          )}
+        </div>
         
-        {company.team_size && (
-          <div className="footer-item">
-            <Users size={14} />
-            <span>{company.team_size}</span>
-          </div>
-        )}
-        
-        {company.is_hiring && (
-          <div className="hiring-badge">Hiring</div>
+        {company.is_hiring ? (
+          <div className="hiring-badge-live">Hiring</div>
+        ) : (
+          <ArrowUpRight size={16} style={{ opacity: 0.4 }} />
         )}
       </div>
     </div>

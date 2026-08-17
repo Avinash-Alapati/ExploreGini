@@ -1,5 +1,5 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 
 export default function FilterBar({ filters, onFilterChange, batches, industries, onClearAll }) {
   const hasActiveFilters = filters.batch || filters.industry || filters.status || filters.search || filters.sortBy;
@@ -14,20 +14,20 @@ export default function FilterBar({ filters, onFilterChange, batches, industries
   };
 
   return (
-    <div>
-      <div className="filter-bar">
+    <div className="filter-panel">
+      <div className="filter-controls-row">
         <input 
           type="text" 
           name="search"
-          placeholder="Filter by name..." 
-          className="filter-input"
+          placeholder="Filter companies by keyword or name..." 
+          className="filter-input-search"
           value={filters.search || ''}
           onChange={handleChange}
         />
         
         <select 
           name="batch" 
-          className="filter-select"
+          className="filter-select-custom"
           value={filters.batch || ''}
           onChange={handleChange}
         >
@@ -39,7 +39,7 @@ export default function FilterBar({ filters, onFilterChange, batches, industries
         
         <select 
           name="industry" 
-          className="filter-select"
+          className="filter-select-custom"
           value={filters.industry || ''}
           onChange={handleChange}
         >
@@ -51,7 +51,7 @@ export default function FilterBar({ filters, onFilterChange, batches, industries
         
         <select 
           name="status" 
-          className="filter-select"
+          className="filter-select-custom"
           value={filters.status || ''}
           onChange={handleChange}
         >
@@ -64,10 +64,9 @@ export default function FilterBar({ filters, onFilterChange, batches, industries
         
         <select 
           name="sortBy" 
-          className="filter-select"
+          className="filter-select-custom"
           value={filters.sortBy || ''}
           onChange={handleChange}
-          style={{ marginLeft: 'auto' }}
         >
           <option value="">Sort By...</option>
           <option value="launched_at-desc">Newest First</option>
@@ -79,40 +78,40 @@ export default function FilterBar({ filters, onFilterChange, batches, industries
       </div>
       
       {hasActiveFilters && (
-        <div className="active-filters">
+        <div className="active-pills-row">
           {filters.search && (
-            <div className="active-filter-pill">
-              Search: {filters.search}
+            <div className="active-filter-tag">
+              <span>Search: {filters.search}</span>
               <button onClick={() => removeFilter('search')}><X size={12}/></button>
             </div>
           )}
           {filters.batch && (
-            <div className="active-filter-pill">
-              Batch: {filters.batch}
+            <div className="active-filter-tag">
+              <span>Batch: {filters.batch}</span>
               <button onClick={() => removeFilter('batch')}><X size={12}/></button>
             </div>
           )}
           {filters.industry && (
-            <div className="active-filter-pill">
-              Industry: {filters.industry}
+            <div className="active-filter-tag">
+              <span>Industry: {filters.industry}</span>
               <button onClick={() => removeFilter('industry')}><X size={12}/></button>
             </div>
           )}
           {filters.status && (
-            <div className="active-filter-pill">
-              Status: {filters.status}
+            <div className="active-filter-tag">
+              <span>Status: {filters.status}</span>
               <button onClick={() => removeFilter('status')}><X size={12}/></button>
             </div>
           )}
           {filters.sortBy && (
-            <div className="active-filter-pill">
-              Sort: {filters.sortBy.split('-').join(' ')}
+            <div className="active-filter-tag">
+              <span>Sort: {filters.sortBy.replace('-', ' ')}</span>
               <button onClick={() => removeFilter('sortBy')}><X size={12}/></button>
             </div>
           )}
           
-          <button className="clear-filters-btn" onClick={onClearAll}>
-            Clear all
+          <button className="btn-clear-filters" onClick={onClearAll}>
+            Reset filters
           </button>
         </div>
       )}

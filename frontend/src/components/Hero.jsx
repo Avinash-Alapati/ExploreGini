@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchBar from './SearchBar';
+import { Sparkles, TrendingUp } from 'lucide-react';
 
 export default function Hero({ searchValue, onSearchChange, onSearchSubmit, isSearching }) {
   const suggestions = [
@@ -12,28 +13,43 @@ export default function Hero({ searchValue, onSearchChange, onSearchSubmit, isSe
   };
 
   return (
-    <div className="hero">
-      <h1>Discover 6,100+ YC Companies</h1>
-      <p>The open database for Y Combinator startups — search by idea, filter by batch & industry.</p>
+    <section className="hero-wrapper">
+      <div className="hero-glow-bg" />
       
-      <SearchBar 
-        value={searchValue} 
-        onChange={onSearchChange}
-        onSearch={onSearchSubmit}
-        isSearching={isSearching}
-      />
-      
-      <div className="hero-chips">
-        {suggestions.map((chip) => (
-          <button 
-            key={chip} 
-            className="hero-chip"
-            onClick={() => handleChipClick(chip)}
-          >
-            {chip}
-          </button>
-        ))}
+      <div className="hero-content">
+        <div className="hero-badge">
+          <Sparkles size={14} />
+          <span>Open Startup Intelligence</span>
+        </div>
+
+        <h1>
+          Explore the <span className="gradient-text">startup ecosystem.</span>
+        </h1>
+        
+        <p>
+          Discover companies, industries and batches through an open startup database.
+        </p>
+        
+        <SearchBar 
+          value={searchValue} 
+          onChange={onSearchChange}
+          onSearch={onSearchSubmit}
+          isSearching={isSearching}
+          placeholder="Search companies, industries, batches..."
+        />
+        
+        <div className="hero-chips">
+          {suggestions.map((chip) => (
+            <button 
+              key={chip} 
+              className="hero-chip"
+              onClick={() => handleChipClick(chip)}
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
