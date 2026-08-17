@@ -1,0 +1,9 @@
+fastapi[standard]
+uvicorn[standard]
+asyncpg
+sqlalchemy[asyncio]
+pgvector
+sentence-transformers
+python-dotenv
+pydantic-settings
+numpy
