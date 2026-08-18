@@ -9,7 +9,7 @@ import CompanyDrawer from '../components/CompanyDrawer';
 import Footer from '../components/Footer';
 import useSearch from '../hooks/useSearch';
 import { fetchCompanies } from '../api/client';
-import { Building2, Briefcase, Layers, ArrowRight, Sparkles } from 'lucide-react';
+import { Building2, Briefcase, Layers, ArrowRight } from 'lucide-react';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,7 +17,15 @@ export default function Home() {
   const [featuredCompanies, setFeaturedCompanies] = useState([]);
   const [featuredLoading, setFeaturedLoading] = useState(true);
   
-  const { results: searchResults, loading: searchLoading } = useSearch(searchQuery);
+  const { 
+    results: searchResults, 
+    externalResults,
+    usedExternalFallback,
+    inputType,
+    queryTextUsed,
+    sourcePageUrl,
+    loading: searchLoading 
+  } = useSearch(searchQuery);
 
   useEffect(() => {
     let mounted = true;
@@ -123,6 +131,11 @@ export default function Home() {
         {searchQuery ? (
           <SearchResults 
             results={searchResults} 
+            externalResults={externalResults}
+            usedExternalFallback={usedExternalFallback}
+            inputType={inputType}
+            queryTextUsed={queryTextUsed}
+            sourcePageUrl={sourcePageUrl}
             loading={searchLoading} 
             query={searchQuery}
             onCompanyClick={setSelectedCompany}

@@ -41,6 +41,15 @@ export const searchCompanies = async (query, limit = 20, batch, industry) => {
   return handleResponse(res);
 };
 
+export const chatSimilarity = async (query, topK = 5) => {
+  const res = await fetch(`${BASE_URL}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, top_k: topK })
+  });
+  return handleResponse(res);
+};
+
 export const fetchBatches = async () => {
   const res = await fetch(`${BASE_URL}/api/batches`);
   return handleResponse(res);

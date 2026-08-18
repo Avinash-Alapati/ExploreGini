@@ -7,3 +7,8 @@ sentence-transformers
 python-dotenv
 pydantic-settings
 numpy
+requests
+httpx
+psycopg2-binary
+crawl4ai
+beautifulsoup4
