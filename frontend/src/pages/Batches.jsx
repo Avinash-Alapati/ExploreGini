@@ -34,18 +34,28 @@ export default function Batches() {
 
   const formatBatchSeason = (batchCode) => {
     if (!batchCode) return 'Cohort';
-    const code = batchCode.toUpperCase();
-    const prefix = code.charAt(0);
-    const year = code.slice(1);
-    
-    let season = '';
-    if (prefix === 'W') season = 'Winter';
-    else if (prefix === 'S') season = 'Summer';
-    else if (prefix === 'F') season = 'Fall';
-    else return `Batch ${code}`;
 
-    const fullYear = year.length === 2 ? `20${year}` : year;
-    return `${season} ${fullYear}`;
+    const raw = String(batchCode).trim();
+
+    // 1. Handle full strings like "WINTER 2026", "SUMMER 2026", "FALL 2026", "SPRING 2026"
+    const words = raw.split(/\s+/);
+    if (words.length >= 2) {
+      const season = words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase();
+      const year = words.slice(1).join(' ');
+      return `${season} ${year}`;
+    }
+
+    // 2. Handle shortcodes like W24, S23, F22, Sp26
+    const code = raw.toUpperCase();
+    const match = code.match(/^([WSF]|SP)(\d{2,4})$/);
+    if (match) {
+      const [, prefix, year] = match;
+      const seasonMap = { W: 'Winter', S: 'Summer', F: 'Fall', SP: 'Spring' };
+      const fullYear = year.length === 2 ? `20${year}` : year;
+      return `${seasonMap[prefix]} ${fullYear}`;
+    }
+
+    return raw;
   };
 
   const filteredBatches = batches.filter(item => {
@@ -103,31 +113,34 @@ export default function Batches() {
           </div>
         ) : (
           <div className="grid-cards-interactive">
-            {filteredBatches.map((item, idx) => (
-              <div 
-                key={idx} 
-                className="card-interactive-item"
-                onClick={() => handleBatchClick(item.batch)}
-              >
-                <div>
-                  <div className="interactive-card-header">
-                    <span className="batch-tag" style={{ fontSize: '0.85rem', padding: '0.3rem 0.75rem' }}>
-                      {item.batch}
-                    </span>
-                    <ArrowRight size={18} className="interactive-arrow" />
+            {filteredBatches.map((item, idx) => {
+              const formattedName = formatBatchSeason(item.batch);
+              return (
+                <div 
+                  key={idx} 
+                  className="card-interactive-item"
+                  onClick={() => handleBatchClick(item.batch)}
+                >
+                  <div>
+                    <div className="interactive-card-header">
+                      <span className="batch-tag" style={{ fontSize: '0.85rem', padding: '0.3rem 0.75rem' }}>
+                        {formattedName}
+                      </span>
+                      <ArrowRight size={18} className="interactive-arrow" />
+                    </div>
+
+                    <div className="interactive-card-title" style={{ marginTop: '0.5rem' }}>
+                      {formattedName}
+                    </div>
                   </div>
 
-                  <div className="interactive-card-title" style={{ marginTop: '0.5rem' }}>
-                    {formatBatchSeason(item.batch)}
+                  <div className="interactive-card-count" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Calendar size={14} style={{ color: 'var(--secondary-light)' }} />
+                    <span>{item.count ? `${item.count.toLocaleString()} startups` : 'Explore Batch'}</span>
                   </div>
                 </div>
-
-                <div className="interactive-card-count" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                  <Calendar size={14} style={{ color: 'var(--secondary-light)' }} />
-                  <span>{item.count ? `${item.count.toLocaleString()} startups` : 'Explore Batch'}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
