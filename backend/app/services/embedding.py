@@ -1,5 +1,6 @@
 import logging
-from typing import List, Dict, Any
+from functools import lru_cache
+from typing import List, Dict, Any, Tuple
 from sentence_transformers import SentenceTransformer
 from app.config import settings
 
@@ -17,9 +18,14 @@ def get_model() -> SentenceTransformer:
 def load_model() -> SentenceTransformer:
     return get_model()
 
-def embed_text(text: str) -> List[float]:
+@lru_cache(maxsize=4096)
+def _cached_embed_text(text: str) -> Tuple[float, ...]:
     model = get_model()
-    return model.encode(text, normalize_embeddings=True).tolist()
+    vec = model.encode(text, normalize_embeddings=True)
+    return tuple(vec.tolist())
+
+def embed_text(text: str) -> List[float]:
+    return list(_cached_embed_text(text))
 
 def get_embedding(text: str) -> List[float]:
     return embed_text(text)

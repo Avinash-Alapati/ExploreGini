@@ -5,7 +5,7 @@ from pgvector.sqlalchemy import Vector
 from .database import Base
 
 class Company(Base):
-    __tablename__ = 'companies'
+    __tablename__ = 'yc_companies'
 
     slug = Column(String, primary_key=True)
     company_name = Column(String, nullable=False)

@@ -1,6 +1,7 @@
 import logging
+import time
 from urllib.parse import urlparse
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +11,28 @@ from app.services.crawler import fetch_page_summary_async
 from app.services.web_search import search_web
 
 logger = logging.getLogger(__name__)
+
+# Fast in-memory query cache with TTL
+_query_cache: Dict[str, Tuple[float, dict]] = {}
+CACHE_TTL_SECONDS = 300  # 5 minutes
+MAX_CACHE_ENTRIES = 2000
+
+def _get_cached_query(cache_key: str) -> Optional[dict]:
+    if cache_key in _query_cache:
+        timestamp, result = _query_cache[cache_key]
+        if time.time() - timestamp < CACHE_TTL_SECONDS:
+            return result
+        else:
+            del _query_cache[cache_key]
+    return None
+
+def _set_cached_query(cache_key: str, result: dict):
+    if len(_query_cache) > MAX_CACHE_ENTRIES:
+        # Simple evict oldest 20%
+        keys_to_remove = list(_query_cache.keys())[:int(MAX_CACHE_ENTRIES * 0.2)]
+        for k in keys_to_remove:
+            _query_cache.pop(k, None)
+    _query_cache[cache_key] = (time.time(), result)
 
 def _looks_like_url(text_val: str) -> bool:
     text_val = text_val.strip()
@@ -71,6 +94,11 @@ async def answer_query(
     batch_filter: Optional[str] = None,
     industry_filter: Optional[str] = None
 ) -> dict:
+    cache_key = f"{user_input.strip()}|{top_k}|{batch_filter}|{industry_filter}"
+    cached = _get_cached_query(cache_key)
+    if cached:
+        return cached
+
     input_type = "url" if _looks_like_url(user_input) else "text"
     source_page_url = None
 
@@ -104,7 +132,7 @@ async def answer_query(
         search_term = f"startups similar to: {query_text[:200]}"
         external_results = search_web(search_term, max_results=5)
 
-    return {
+    response_payload = {
         "input_type": input_type,
         "query_text_used": query_text,
         "source_page_url": source_page_url,
@@ -115,3 +143,6 @@ async def answer_query(
         "total": len(db_matches),
         "query": user_input
     }
+    
+    _set_cached_query(cache_key, response_payload)
+    return response_payload
