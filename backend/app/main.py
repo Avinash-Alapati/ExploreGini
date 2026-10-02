@@ -136,11 +136,10 @@ def run_embed_all(force: bool = False):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Preload the model on startup
-    try:
-        load_model()
-    except Exception as e:
-        logger.warning(f"Embedding model eager loading notice: {e}")
+    # Preload the embedding model asynchronously in background thread
+    # This allows Uvicorn to immediately bind to $PORT without waiting for model downloads
+    import asyncio
+    asyncio.create_task(asyncio.to_thread(load_model))
     yield
 
 app = FastAPI(
