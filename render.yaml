@@ -2,7 +2,7 @@ services:
   # Backend API Web Service
   - type: web
     name: exploregini-api
-    runtime: python
+    env: python
     rootDir: backend
     plan: free
     region: oregon
@@ -11,9 +11,7 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: exploregini-db
-          property: connectionString
+        value: postgresql://neondb_owner:npg_1U0pjSiAKgIM@ep-plain-cherry-aywmz4ls.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
       - key: EMBEDDING_MODEL
         value: all-MiniLM-L6-v2
       - key: PYTHON_VERSION
@@ -24,7 +22,7 @@ services:
   # Frontend Static Site
   - type: web
     name: exploregini-frontend
-    runtime: static
+    env: static
     rootDir: frontend
     plan: free
     region: oregon
@@ -41,11 +39,3 @@ services:
           name: exploregini-api
           property: host
 
-databases:
-  # Managed PostgreSQL Database
-  - name: exploregini-db
-    databaseName: ycombinator_db
-    user: postgres
-    plan: free
-    region: oregon
-    postgresMajorVersion: 16

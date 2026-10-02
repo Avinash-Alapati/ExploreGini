@@ -25,15 +25,28 @@ class Settings(BaseSettings):
         """
         Formats DATABASE_URL for SQLAlchemy asyncpg engine.
         Converts postgres:// or postgresql:// to postgresql+asyncpg://
-        and converts sslmode=require to ssl=require (required by asyncpg).
+        and converts sslmode=require to ssl=require (required by asyncpg),
+        and removes unsupported parameters like channel_binding.
         """
         url = os.environ.get("DATABASE_URL", self.DATABASE_URL)
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql+asyncpg://", 1)
         elif url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
             url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        
+        # Clean query parameters for asyncpg compatibility (e.g. Neon connection strings)
+        if "channel_binding=" in url:
+            import re
+            url = re.sub(r'[&?]channel_binding=[^&]+', '', url)
+            if '?' not in url and '&' in url:
+                url = url.replace('&', '?', 1)
+
         if "sslmode=require" in url:
             url = url.replace("sslmode=require", "ssl=require")
+        elif "sslmode=" in url:
+            import re
+            url = re.sub(r'sslmode=[^&]+', 'ssl=require', url)
+
         return url
 
     @property
