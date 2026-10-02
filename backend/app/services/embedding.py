@@ -1,28 +1,31 @@
 import logging
 from functools import lru_cache
 from typing import List, Dict, Any, Tuple
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 from app.config import settings
 
 logger = logging.getLogger(__name__)
 
 _model = None
 
-def get_model() -> SentenceTransformer:
+def get_model() -> TextEmbedding:
     global _model
     if _model is None:
-        logger.info(f"Loading embedding model '{settings.EMBEDDING_MODEL}'...")
-        _model = SentenceTransformer(settings.EMBEDDING_MODEL)
+        model_name = settings.EMBEDDING_MODEL
+        if not model_name.startswith("sentence-transformers/") and model_name == "all-MiniLM-L6-v2":
+            model_name = "sentence-transformers/all-MiniLM-L6-v2"
+        logger.info(f"Loading lightweight embedding model '{model_name}'...")
+        _model = TextEmbedding(model_name=model_name)
     return _model
 
-def load_model() -> SentenceTransformer:
+def load_model() -> TextEmbedding:
     return get_model()
 
 @lru_cache(maxsize=4096)
 def _cached_embed_text(text: str) -> Tuple[float, ...]:
     model = get_model()
-    vec = model.encode(text, normalize_embeddings=True)
-    return tuple(vec.tolist())
+    embeddings = list(model.embed([text]))
+    return tuple(float(x) for x in embeddings[0])
 
 def embed_text(text: str) -> List[float]:
     return list(_cached_embed_text(text))

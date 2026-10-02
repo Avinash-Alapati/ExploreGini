@@ -115,8 +115,8 @@ def run_embed_all(force: bool = False):
         for i in range(0, len(rows), batch_size):
             batch = rows[i:i + batch_size]
             texts = [build_embedding_text(r) for r in batch]
-            vectors = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
-            pairs = [(r["slug"], vec.tolist()) for r, vec in zip(batch, vectors)]
+            vectors = list(model.embed(texts))
+            pairs = [(r["slug"], [float(x) for x in vec]) for r, vec in zip(batch, vectors)]
 
             with conn.cursor() as cur:
                 execute_values(
