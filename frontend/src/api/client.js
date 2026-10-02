@@ -1,4 +1,15 @@
-const BASE_URL = 'http://localhost:8000';
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl !== undefined && envUrl !== null && envUrl !== '') {
+    return envUrl.replace(/\/+$/, '');
+  }
+  if (import.meta.env.DEV) {
+    return 'http://localhost:8000';
+  }
+  return '';
+};
+
+const BASE_URL = getApiBaseUrl();
 
 const handleResponse = async (res) => {
   if (!res.ok) {

@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.models import Company
 from app.services.embedding import get_embedding
 from app.services.crawler import fetch_page_summary_async
 from app.services.web_search import search_web
@@ -51,14 +52,15 @@ async def semantic_search(
     industry_filter: Optional[str] = None
 ) -> List[dict]:
     
-    query = """
+    table_name = Company.__tablename__
+    query = f"""
         SELECT 
             slug, company_name, one_liner, long_description, website,
             yc_profile_url, logo_url, batch, status, stage, team_size,
             industry, subindustry, industries, tags, regions, all_locations,
             is_hiring, top_company, nonprofit, launched_at,
             1 - (embedding <=> CAST(:query_vector AS vector)) AS similarity_score
-        FROM companies 
+        FROM {table_name} 
         WHERE embedding IS NOT NULL
     """
     

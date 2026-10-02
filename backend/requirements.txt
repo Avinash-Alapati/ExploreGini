@@ -1,5 +1,6 @@
 fastapi[standard]
 uvicorn[standard]
+gunicorn
 asyncpg
 sqlalchemy[asyncio]
 pgvector
@@ -12,3 +13,4 @@ httpx
 psycopg2-binary
 crawl4ai
 beautifulsoup4
+
